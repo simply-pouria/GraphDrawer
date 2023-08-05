@@ -1,7 +1,5 @@
 import random
 import math
-import tkinter as tk
-
 
 
 def clean_degree_list(degree_set):
@@ -17,7 +15,7 @@ def clean_degree_list(degree_set):
             degree = int(degree)
             degree_sequence.append(degree)
 
-    except:
+    except ValueError:
         return False
 
     else:
@@ -101,8 +99,10 @@ def is_a_graph(degree_set):
 # **********************************************************************************************************************
 
 
-# coordinate of the center of the canvas
+# coordinate of the center of the canvas is already in so for loop can be used
 every_coordinate = [[222.5, 200]]
+# a dictionary that stores vertices' degrees and their coordinates
+vertices = {}
 
 
 # generating a random coordinate which isn't too close to others
@@ -135,19 +135,63 @@ def hex_color_generator():
 
 
 # draws a dot, needed a function for it as it's not straightforward at all in tkinter
-def draw_dot(canvas, number):
+def draw_dot(canvas):
 
-    while number > 0:
-        number -= 1
-        center = coordinate_generator(75, 75, 375, 325)
-        canvas.create_oval(center[0]-5, center[1]-5, center[0]+5, center[1]+5, fill=hex_color_generator())
+    center = coordinate_generator(75, 75, 375, 325)
+    canvas.create_oval(center[0]-3, center[1]-3, center[0]+3, center[1]+3, fill=hex_color_generator())
+    return center
 
 
 # draws what remains from the graph after the Havel-Hakimi algorithm is finished
 def draw_base_graph(canvas, info):
+
+    degree_1 = []
     base_graph = info[0]
-    p = len(base_graph)
-    draw_dot(canvas, p)
+    flag = 0
+    neighbour_vertices = {}
+
+    # creates a dictionary containing the coordinates of the vertices and their degrees
+    for vertex_degree in base_graph:
+
+        # tuple() was needed to prevent a 'unhashable type: 'list'' error
+        vertex_coordinate = tuple(draw_dot(canvas))
+        global vertices
+        vertices[vertex_coordinate] = vertex_degree
+
+    # creates a list of vertices which their degree is 1
+    for vertex in vertices:
+
+        if vertices[vertex] == 1:
+            degree_1.append(vertex)
+
+    # this works because the number of 1's is always even, it creates a dictionary containing the vertices that
+    # should be connected to each other
+    for coordinate in degree_1:
+        flag += 1
+
+        if flag % 2 == 1:
+            key = tuple(coordinate)
+
+        elif flag % 2 == 0:
+            neighbour_vertices[key] = tuple(coordinate)
+
+    for neighbours in neighbour_vertices:
+
+        canvas.create_line(neighbours[0], neighbour_vertices[neighbours][0],
+                           neighbours[1], neighbour_vertices[neighbours][1])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

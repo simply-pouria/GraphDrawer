@@ -12,7 +12,7 @@ def drawing_info():
                                                                                          'belong to a graph'):
         messagebox.showerror(title='wrong input', message=info)
     else:
-        print(info)
+        functions.draw_base_graph(canvas,info)
 
 
 # Drawing the UI using tk and Ctk
@@ -41,6 +41,6 @@ button.place(x=380, y=20)
 textbox.place(x=20, y=20)
 canvas.place(x=20, y=80)
 
-functions.draw_dot(canvas=canvas, number=10)
+
 
 rt.mainloop()
