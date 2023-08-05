@@ -1,19 +1,18 @@
 import tkinter as tk
+from tkinter import messagebox
 import customtkinter as ctk
-from functions import is_a_graph
+import functions
 
 ctk.set_appearance_mode("dark")
 
 
 def drawing_info():
-    info = is_a_graph(textbox.get())
+    info = functions.is_a_graph(textbox.get())
     if info == 'Enter the degree set of a graph in this form: 6,6,4,3,3,2,2' or info == ('The degree set does not '
                                                                                          'belong to a graph'):
-        label = tk.Label(master=rt,
-                         text=info,
-                         fg='red')
-
-        label.place(x=20, y=63)
+        messagebox.showerror(title='wrong input', message=info)
+    else:
+        print(info)
 
 
 # Drawing the UI using tk and Ctk
@@ -41,5 +40,7 @@ canvas = tk.Canvas(master=rt,
 button.place(x=380, y=20)
 textbox.place(x=20, y=20)
 canvas.place(x=20, y=80)
+
+functions.draw_dot(canvas=canvas, number=10)
 
 rt.mainloop()

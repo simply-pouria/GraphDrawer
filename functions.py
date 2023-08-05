@@ -1,5 +1,7 @@
 import random
 import math
+import tkinter as tk
+
 
 
 def clean_degree_list(degree_set):
@@ -24,10 +26,8 @@ def clean_degree_list(degree_set):
         return degree_sequence
 
 
-def HavelHakimi_single_step(degree_sequence):
+def havel_hakimi_single_step(degree_sequence):
     degree_sequence.sort(reverse=True)
-    # in graph theory, the letter 'p' is associated with the number of vertices
-    p = len(degree_sequence)
     # in graph theory,the Greek capital letter 'delta' is associated with the biggest degree in a graph
     delta = degree_sequence[0]
     # as it is in Havel-Hakimi Algorithm, we should first delete the vertical with the biggest degree, then choose the
@@ -38,6 +38,7 @@ def HavelHakimi_single_step(degree_sequence):
     while flag >= 0:
         degree_sequence[flag] = degree_sequence[flag] - 1
         flag = flag - 1
+        degree_sequence.sort(reverse=True)
 
     return degree_sequence
 
@@ -76,7 +77,7 @@ def is_a_graph(degree_set):
                 negative_number_indicator = 0
                 n = n - 1
 
-                degree_sequence = HavelHakimi_single_step(degree_sequence)
+                degree_sequence = havel_hakimi_single_step(degree_sequence)
                 drawing_list.insert(0, degree_sequence[:])
 
                 for degree in degree_sequence:
@@ -88,34 +89,91 @@ def is_a_graph(degree_set):
                         negative_number_indicator = negative_number_indicator + 1
 
                 if zero_indicator == n:
+                    drawing_list.remove(drawing_list[0])
                     return drawing_list
 
                 elif negative_number_indicator != 0:
                     return 'The degree set does not belong to a graph'
 
 
-# **************************************************************************************************** DRAWING FUNCTIONS
+# **********************************************************************************************************************
+# **********************************************DRAWING FUNCTIONS*******************************************************
+# **********************************************************************************************************************
 
-coordinates = [[222.5, 200]]
+
+# coordinate of the center of the canvas
+every_coordinate = [[222.5, 200]]
 
 
 # generating a random coordinate which isn't too close to others
+# arguments are used to indicate the range in which numbers are generated
 def coordinate_generator(x0, y0, x1, y1):
     x = random.randint(x0, x1)
     y = random.randint(y0, y1)
     coordinate = [x, y]
 
     # checking if the coordinates are too close
-    global coordinates
-    for c in coordinates:
+    global every_coordinate
+    for c in every_coordinate:
         # calculating the Euclidean distance between current and other coordinates
         distance = math.dist(c, coordinate)
 
-        if distance < 20:
+        if distance < 100:
             return coordinate_generator(x0, y0, x1, y1)
 
         else:
-            coordinates.append(coordinate[:])
+            every_coordinate.append(coordinate[:])
             return coordinate
 
-# print(random_coordination(75,75,375,325))
+
+# generates a random hex color
+def hex_color_generator():
+    def get_int():
+        return random.randint(0, 255)
+
+    return f'#{get_int():02X}{get_int():02X}{get_int():02X}'
+
+
+# draws a dot, needed a function for it as it's not straightforward at all in tkinter
+def draw_dot(canvas, number):
+
+    while number > 0:
+        number -= 1
+        center = coordinate_generator(75, 75, 375, 325)
+        canvas.create_oval(center[0]-5, center[1]-5, center[0]+5, center[1]+5, fill=hex_color_generator())
+
+
+# draws what remains from the graph after the Havel-Hakimi algorithm is finished
+def draw_base_graph(canvas, info):
+    base_graph = info[0]
+    p = len(base_graph)
+    draw_dot(canvas, p)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
