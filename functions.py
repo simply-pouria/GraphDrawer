@@ -94,15 +94,13 @@ def is_a_graph(degree_set):
                     return 'The degree set does not belong to a graph'
 
 
-# **********************************************************************************************************************
-# **********************************************DRAWING FUNCTIONS*******************************************************
-# **********************************************************************************************************************
+# ******************************************************************************************************************** #
+# **********************************************DRAWING FUNCTIONS***************************************************** #
+# ******************************************************************************************************************** #
 
 
 # coordinate of the center of the canvas is already in so for loop can be used
 every_coordinate = [[222.5, 200]]
-# a dictionary that stores vertices' degrees and their coordinates
-vertices = {}
 
 
 # generating a random coordinate which isn't too close to others
@@ -145,6 +143,8 @@ def draw_dot(canvas):
 # draws what remains from the graph after the Havel-Hakimi algorithm is finished
 def draw_base_graph(canvas, info):
 
+    # a dictionary that stores vertices' degrees and their coordinates
+    vertices = {}
     degree_1 = []
     base_graph = info[0]
     flag = 0
@@ -155,7 +155,6 @@ def draw_base_graph(canvas, info):
 
         # tuple() was needed to prevent a 'unhashable type: 'list'' error
         vertex_coordinate = tuple(draw_dot(canvas))
-        global vertices
         vertices[vertex_coordinate] = vertex_degree
 
     # creates a list of vertices which their degree is 1
@@ -172,13 +171,61 @@ def draw_base_graph(canvas, info):
         if flag % 2 == 1:
             key = tuple(coordinate)
 
-        elif flag % 2 == 0:
+        else:
             neighbour_vertices[key] = tuple(coordinate)
 
     for neighbours in neighbour_vertices:
 
-        canvas.create_line(neighbours[0], neighbour_vertices[neighbours][0],
-                           neighbours[1], neighbour_vertices[neighbours][1])
+        canvas.create_line(neighbours[0],  # X0
+                           neighbours[1],  # Y0
+                           neighbour_vertices[neighbours][0],  # X1
+                           neighbour_vertices[neighbours][1])  # Y1
+
+    return vertices
+
+
+def draw_graph(canvas, info):
+
+    level_index = 0
+    vertices = draw_base_graph(canvas, info)
+
+    for level in info:
+
+        level_index += 1
+
+        if level == info[0]:
+            continue
+
+        else:
+
+            delta = level[0]
+            delta_coordinate = draw_dot(canvas)
+            vertices[delta_coordinate] = delta
+            level.remove(level[0])
+            lower_level = info[level_index-1]
+
+            for degree in level:
+                for lower_degree in lower_level:
+
+                    if abs(degree - lower_degree) <= 1:
+
+                        level.remove(degree)
+                        lower_level.remove(lower_degree)
+                        # break
+                        # should draw a line between the new vertex and the already existing vertex
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

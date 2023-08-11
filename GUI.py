@@ -37,10 +37,10 @@ canvas = tk.Canvas(master=rt,
                    height=400,
                    bg='Gray')
 
+
 button.place(x=380, y=20)
 textbox.place(x=20, y=20)
 canvas.place(x=20, y=80)
-
 
 
 rt.mainloop()
