@@ -20,6 +20,7 @@ def drawing_info():
 rt = tk.Tk()
 rt.geometry('500x500')
 rt.title('Graph Drawer')
+rt.wm_iconbitmap("Graph Drawer.ico")
 
 button = ctk.CTkButton(master=rt,
                        corner_radius=10,
