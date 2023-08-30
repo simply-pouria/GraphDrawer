@@ -3,6 +3,7 @@ import math
 
 
 def clean_degree_list(degree_set):
+
     degree_sequence = []
 
     # turning the degree set into a list
@@ -10,12 +11,14 @@ def clean_degree_list(degree_set):
 
     # handling the exception where the user inputs anything other than an integer number
     try:
+
         # turning the list strings into integers and appending it into degree_sequence
         for degree in degree_set:
             degree = int(degree)
             degree_sequence.append(degree)
 
     except ValueError:
+
         return False
 
     else:
@@ -25,12 +28,16 @@ def clean_degree_list(degree_set):
 
 
 def havel_hakimi_single_step(degree_sequence):
+
     degree_sequence.sort(reverse=True)
-    # in graph theory,the Greek capital letter 'delta' is associated with the biggest degree in a graph
+
+    # in graph theory,the Greek capital letter 'delta' is associated with the biggest degree of a graph
     delta = degree_sequence[0]
+
     # as it is in Havel-Hakimi Algorithm, we should first delete the vertical with the biggest degree, then choose the
     # delta number of vertices that have the biggest degrees and  decrease them by 1
     flag = delta - 1
+
     degree_sequence.remove(degree_sequence[0])
 
     while flag >= 0:
@@ -45,7 +52,9 @@ def is_a_graph(degree_set):
     degree_sequence = clean_degree_list(degree_set)
 
     if not degree_sequence:
+
         return 'Enter the degree set of a graph in this form: 6,6,4,3,3,2,2'
+
     else:
 
         # in graph theory, the letter 'p' is associated with the number of vertices
@@ -65,6 +74,7 @@ def is_a_graph(degree_set):
 
             n = p  # n is used to show the number of vertices after performing the havel-hakimi algorithm
             drawing_list = []
+
             drawing_list.insert(0, degree_sequence[:])
 
             # this is continued until the  sequence reaches all zeros (existent graph) or  doesn't (non-existent
@@ -81,9 +91,11 @@ def is_a_graph(degree_set):
                 for degree in degree_sequence:
 
                     if degree == 0:
+
                         zero_indicator = zero_indicator + 1
 
                     elif degree < 0:
+
                         negative_number_indicator = negative_number_indicator + 1
 
                 if zero_indicator == n:
@@ -106,26 +118,32 @@ every_coordinate = [[222.5, 200]]
 # generating a random coordinate which isn't too close to others
 # arguments are used to indicate the range in which numbers are generated
 def coordinate_generator(x0, y0, x1, y1):
+
     x = random.randint(x0, x1)
     y = random.randint(y0, y1)
     coordinate = [x, y]
 
     # checking if the coordinates are too close
     global every_coordinate
+
     for c in every_coordinate:
+
         # calculating the Euclidean distance between current and other coordinates
         distance = math.dist(c, coordinate)
 
         if distance < 100:
+
             return coordinate_generator(x0, y0, x1, y1)
 
         else:
+
             every_coordinate.append(coordinate[:])
             return coordinate
 
 
 # generates a random hex color
 def hex_color_generator():
+
     def get_int():
         return random.randint(0, 255)
 
@@ -141,7 +159,8 @@ def draw_dot(canvas):
 
 
 # draws what remains from the graph after the Havel-Hakimi algorithm is finished
-def draw_base_graph(canvas, info):
+def draw_base_graph(canvas,
+                    info: list):
 
     # a dictionary that stores vertices' degrees and their coordinates
     vertices = {}
@@ -184,35 +203,108 @@ def draw_base_graph(canvas, info):
     return vertices
 
 
+# since dictionaries are not indexed in Python, and yet 'for loop' iterates a dictionary from left
+# while new keys are added to right, therefore this function is needed to add a key to the left of a dictionary.
+def add_to_left(dictionary, new_key, new_value):
+
+    dictionary_holder = dictionary.copy()
+    dictionary.clear()
+    new_dictionary = {new_key: new_value}
+    new_dictionary.update(dictionary_holder)
+
+    return new_dictionary
+
+
+# it draws lines between it and vertices which their degree has been reduced in that specific step
+# it also updates the dictionary to a higher level and returns it
+def line_drawer_single_step(lower_level: dict,
+                            higher_level: list,
+                            biggest_degree_coordinate: tuple,
+                            delta: int,
+                            canvas):
+
+    higher_level_index = 1  # this starts from 1 since the first value (index 0) in higher_level is not needed
+
+    for coordinate in lower_level:
+
+        higher_degree = higher_level[higher_level_index]
+        lower_degree = lower_level[coordinate]
+        higher_level_index += 1
+
+        if higher_degree - lower_degree == 1:
+
+            canvas.create_line(coordinate[0],  # X0
+                               coordinate[1],  # Y0
+                               biggest_degree_coordinate[0],  # X1
+                               biggest_degree_coordinate[1])  # Y1
+
+            lower_level[coordinate] += 1
+
+    new_higher_level = add_to_left(lower_level,
+                                   tuple(biggest_degree_coordinate),
+                                   delta)
+
+    return new_higher_level
+
+
+# iterates through levels and feeds them to line_drawer_single_step
 def draw_graph(canvas, info):
 
-    level_index = 0
-    vertices = draw_base_graph(canvas, info)
+    lower_level = draw_base_graph(canvas, info)
 
     for level in info:
 
-        level_index += 1
-
-        if level == info[0]:
+        if level == info[0]:  # level 0 is already generated by draw_base_graph function
             continue
 
         else:
 
-            delta = level[0]
-            delta_coordinate = draw_dot(canvas)
-            vertices[delta_coordinate] = delta
-            level.remove(level[0])
-            lower_level = info[level_index-1]
+            # it creates its lower level  dictionary as it goes on
+            lower_level = line_drawer_single_step(lower_level=lower_level,
+                                                  higher_level=level,
+                                                  biggest_degree_coordinate=draw_dot(canvas),
+                                                  delta=info[info.index(level)][0],
+                                                  canvas=canvas)
 
-            for degree in level:
-                for lower_degree in lower_level:
 
-                    if abs(degree - lower_degree) <= 1:
 
-                        level.remove(degree)
-                        lower_level.remove(lower_degree)
-                        # break
-                        # should draw a line between the new vertex and the already existing vertex
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

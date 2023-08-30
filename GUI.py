@@ -12,7 +12,8 @@ def drawing_info():
                                                                                          'belong to a graph'):
         messagebox.showerror(title='wrong input', message=info)
     else:
-        functions.draw_base_graph(canvas,info)
+        canvas.delete("all")
+        functions.draw_graph(canvas,info)
 
 
 # Drawing the UI using tk and Ctk
